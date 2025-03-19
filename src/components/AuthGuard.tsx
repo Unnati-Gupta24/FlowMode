@@ -1,19 +1,24 @@
 import React from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation, Location } from "react-router-dom";
 import { useStore } from "../store/store";
 
 interface AuthGuardProps {
   children: React.ReactNode;
 }
 
-export default function AuthGuard({ children }: AuthGuardProps) {
+interface User {
+  id: string;
+  email: string;
+}
+
+const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   const { user, loading } = useStore();
   const location = useLocation();
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#ff2a6d]"></div>
       </div>
     );
   }
@@ -23,4 +28,6 @@ export default function AuthGuard({ children }: AuthGuardProps) {
   }
 
   return <>{children}</>;
-}
+};
+
+export default AuthGuard;

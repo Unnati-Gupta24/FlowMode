@@ -16,6 +16,17 @@
     @apply bg-[color:var(--color-cyber-darkest)] text-white;
     font-family: 'Segoe UI', system-ui, sans-serif;
   }
+
+  /* Ensure inputs inherit text color and handle password dots */
+  input {
+    @apply text-white;
+    -webkit-text-fill-color: #ffffff;
+  }
+
+  input[type="password"] {
+    -webkit-text-security: disc !important; /* Force dots */
+    -webkit-text-fill-color: #ffffff !important; /* Force white dots */
+  }
 }
 
 @layer components {
@@ -31,7 +42,8 @@
   .cyber-input {
     @apply bg-[color:var(--color-cyber-darker)] border-2 border-[color:var(--color-cyber-blue)] text-white px-4 py-2 rounded-none
            focus:outline-none focus:border-[color:var(--color-cyber-pink)] focus:shadow-[0_0_5px_var(--color-cyber-pink),0_0_20px_var(--color-cyber-pink)]
-           placeholder:text-gray-500 transition-all duration-300;
+           placeholder:text-gray-500 transition-all duration-300
+           [-webkit-text-fill-color:#ffffff] [-webkit-box-shadow:0_0_0_30px_var(--color-cyber-darker)_inset];
   }
 
   .cyber-card {

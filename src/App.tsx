@@ -2,17 +2,23 @@ import React, { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import CyberpunkLayout from "./components/CyberpunkLayout";
 import AuthGuard from "./components/AuthGuard";
-import PomodoroPage from "./pages/PomorodoPage";
+import PomodoroPage from "./pages/PomorodoPage"; 
 import NotesPage from "./pages/NotesPage";
 import HabitsPage from "./pages/HabitsPage";
 import AuthPage from "./pages/AuthPage";
 import { useStore } from "./store/store";
 import { supabase } from "./lib/supabase";
 
-function App() {
+interface User {
+  id: string;
+  email: string;
+}
+
+const App: React.FC = () => {
   const { setUser, setLoading } = useStore();
 
   useEffect(() => {
+    // Fetch initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
         setUser({ id: session.user.id, email: session.user.email! });
@@ -20,6 +26,7 @@ function App() {
       setLoading(false);
     });
 
+    // Listen for auth state changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -31,8 +38,9 @@ function App() {
       setLoading(false);
     });
 
+    // Cleanup subscription
     return () => subscription.unsubscribe();
-  }, []);
+  }, [setUser, setLoading]);
 
   return (
     <BrowserRouter>
@@ -53,6 +61,6 @@ function App() {
       </Routes>
     </BrowserRouter>
   );
-}
+};
 
 export default App;
