@@ -23,7 +23,15 @@ interface Store {
   signOut: () => Promise<void>;
 }
 
-export const useStore = create<Store>((set, get) => ({
+// Add these types if they don't exist
+interface AuthStore {
+  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<void>;
+  // ... other store properties
+}
+
+// Update your useStore hook type
+export const useStore = create<AuthStore>((set) => ({
   notes: [],
   settings: {
     workDuration: 25,

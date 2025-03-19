@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, FormEvent } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Timer, User, Lock } from "lucide-react";
+import { Timer, User, Lock, Power, Shield, ChevronRight } from "lucide-react";
 import { useStore } from "../store/store";
+import CyberpunkLayout from "../components/CyberpunkLayout";
 
 export default function AuthPage() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -12,13 +12,21 @@ export default function AuthPage() {
   const { signIn, signUp } = useStore();
   const navigate = useNavigate();
   const location = useLocation();
+  const [glitchText, setGlitchText] = useState(false);
 
   const from = location.state?.from?.pathname || "/";
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setGlitchText(true);
+      setTimeout(() => setGlitchText(false), 200);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
-
     try {
       if (isSignUp) {
         await signUp(email, password);
@@ -27,118 +35,127 @@ export default function AuthPage() {
       }
       navigate(from, { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      setError(
+        err instanceof Error ? err.message : "Authentication failed. Try again."
+      );
     }
   };
 
   return (
-    <div className="min-h-screen bg-cyber-darkest flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="scanline" />
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="sm:mx-auto sm:w-full sm:max-w-md"
-      >
-        <motion.div
-          className="flex justify-center"
-          animate={{ scale: [1, 1.1, 1] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <Timer className="h-16 w-16 text-cyber-pink" />
-        </motion.div>
-        <h2 className="mt-6 text-center text-4xl font-extrabold cyber-text">
-          {isSignUp ? "Initialize System" : "System Access"}
-        </h2>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-        className="mt-8 sm:mx-auto sm:w-full sm:max-w-md"
-      >
-        <div className="cyber-card">
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-cyber-blue"
-              >
-                Identity Code
-              </label>
-              <div className="mt-1 relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-cyber-blue" />
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="cyber-input pl-10 w-full"
-                  placeholder="Enter your identity code"
-                />
-              </div>
+    <CyberpunkLayout>
+      <style>
+        {`
+          @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@400;500&display=swap');
+          .orbitron { font-family: 'Orbitron', sans-serif; }
+          .roboto-mono { font-family: 'Roboto Mono', monospace; }
+        `}
+      </style>
+      <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-md">
+          <div className="text-center">
+            <div className="w-24 h-24 rounded-full bg-[#0a0a1f] border-2 border-[#4f9ecf] flex items-center justify-center mx-auto">
+              <Timer className="h-12 w-12 text-[#ff2a6d]" />
             </div>
 
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-cyber-blue"
-              >
-                Access Key
-              </label>
-              <div className="mt-1 relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-cyber-blue" />
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="cyber-input pl-10 w-full"
-                  placeholder="Enter your access key"
-                />
-              </div>
-            </div>
-
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="text-cyber-pink text-sm"
-              >
-                {error}
-              </motion.div>
-            )}
-
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              type="submit"
-              className="w-full cyber-button"
+            <h2
+              className={`mt-6 text-4xl font-bold orbitron ${
+                glitchText ? "text-[#ff2a6d]" : "text-white"
+              }`}
             >
-              {isSignUp ? "Initialize" : "Access System"}
-            </motion.button>
-          </form>
+              {isSignUp ? "INITIALIZE SYSTEM" : "SYSTEM ACCESS"}
+            </h2>
 
-          <div className="mt-6">
-            <button
-              onClick={() => setIsSignUp(!isSignUp)}
-              className="w-full text-center text-sm text-cyber-blue hover:text-cyber-pink transition-colors"
-            >
+            <p className="mt-2 text-sm text-[#4f9ecf] roboto-mono">
               {isSignUp
-                ? ">> Return to Access Portal"
-                : ">> Request New Identity"}
-            </button>
+                ? "Creating new security credentials"
+                : "Enter security credentials to proceed"}
+            </p>
+          </div>
+
+          <div className="mt-8">
+            <div className="bg-[#0a0a2f]/70 border border-[#4f9ecf] shadow-lg shadow-[#4f9ecf]/20 backdrop-blur-sm p-8">
+              <form className="space-y-6" onSubmit={handleSubmit}>
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-[#4f9ecf] roboto-mono"
+                  >
+                    IDENTITY CODE
+                  </label>
+                  <div className="mt-1 relative">
+                    <User
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#4f9ecf]"
+                      size={16}
+                    />
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      autoComplete="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="block w-full pl-10 pr-4 py-3 bg-[#12122A] text-white border border-[#4f9ecf] focus:ring-2 focus:ring-[#ff2a6d] outline-none roboto-mono placeholder-gray-500"
+                      placeholder="Enter your identity code"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="password"
+                    className="block text-sm font-medium text-[#4f9ecf] roboto-mono"
+                  >
+                    ACCESS KEY
+                  </label>
+                  <div className="mt-1 relative">
+                    <Lock
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#4f9ecf]"
+                      size={16}
+                    />
+                    <input
+                      id="password"
+                      name="password"
+                      type="password"
+                      autoComplete="current-password"
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="block w-full pl-10 pr-4 py-3 bg-[#12122A] text-white border border-[#4f9ecf] focus:ring-2 focus:ring-[#ff2a6d] outline-none roboto-mono placeholder-gray-500"
+                      placeholder="Enter your access key"
+                    />
+                  </div>
+                </div>
+
+                {error && (
+                  <div className="text-[#ff2a6d] text-sm flex items-center gap-2 roboto-mono">
+                    <Shield className="h-4 w-4" />
+                    <span>{error}</span>
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  className="w-full bg-[#12122A] border border-[#4f9ecf] py-3 text-white font-medium orbitron flex items-center justify-center gap-2 hover:bg-gradient-to-r hover:from-[#4f9ecf] hover:to-[#ff2a6d]"
+                >
+                  <Power className="h-4 w-4" />
+                  {isSignUp ? "INITIALIZE" : "ACCESS SYSTEM"}
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </form>
+
+              <button
+                onClick={() => setIsSignUp(!isSignUp)}
+                className="mt-6 w-full text-center text-sm text-[#4f9ecf] roboto-mono hover:text-[#ff2a6d] hover:text-shadow-[0_0_8px_rgba(255,42,109,0.6)]"
+              >
+                {isSignUp
+                  ? ">> RETURN TO ACCESS PORTAL"
+                  : ">> REQUEST NEW IDENTITY"}
+              </button>
+            </div>
           </div>
         </div>
-      </motion.div>
-    </div>
+      </div>
+    </CyberpunkLayout>
   );
 }

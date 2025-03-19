@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Layout from "./components/Layout";
+import CyberpunkLayout from "./components/CyberpunkLayout";
 import AuthGuard from "./components/AuthGuard";
 import PomodoroPage from "./pages/PomorodoPage";
 import NotesPage from "./pages/NotesPage";
@@ -42,7 +42,7 @@ function App() {
           path="/"
           element={
             <AuthGuard>
-              <Layout />
+              <CyberpunkLayout />
             </AuthGuard>
           }
         >
