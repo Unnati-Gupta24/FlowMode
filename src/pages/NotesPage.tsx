@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Plus, Trash2, Save } from "lucide-react";
 import { useStore } from "../store/store";
 import { Note } from "../types";
-import CyberpunkLayout from "../components/CyberpunkLayout";
 
 const NotesPage: React.FC = () => {
   const { notes, addNote, updateNote, deleteNote } = useStore();
@@ -30,7 +29,6 @@ const NotesPage: React.FC = () => {
 
   return (
     <div className="relative min-h-screen">
-      <CyberpunkLayout className="absolute inset-0 z-0" />
       <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
         <style>
           {`

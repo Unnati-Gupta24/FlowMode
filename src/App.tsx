@@ -1,8 +1,7 @@
 import React, { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import CyberpunkLayout from "./components/CyberpunkLayout";
-import AuthGuard from "./components/AuthGuard";
-import PomodoroPage from "./pages/PomorodoPage"; 
+import AuthGuard from "./components/AuthGuard"; 
+import PomodoroPage from "./pages/PomorodoPage";
 import NotesPage from "./pages/NotesPage";
 import HabitsPage from "./pages/HabitsPage";
 import AuthPage from "./pages/AuthPage";
@@ -46,15 +45,8 @@ const App: React.FC = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/auth" element={<AuthPage />} />
-        <Route
-          path="/"
-          element={
-            <AuthGuard>
-              <CyberpunkLayout />
-            </AuthGuard>
-          }
-        >
-          <Route index element={<PomodoroPage />} />
+        <Route element={<AuthGuard />}>
+          <Route index path="/" element={<PomodoroPage />} />
           <Route path="notes" element={<NotesPage />} />
           <Route path="habits" element={<HabitsPage />} />
         </Route>
