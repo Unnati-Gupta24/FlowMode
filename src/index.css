@@ -3,54 +3,73 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --color-cyber-darkest: #0a0a15;
+    --color-cyber-darker: #121225;
+    --color-cyber-dark: #1a1a35;
+    --color-cyber-blue: #4f9ecf;
+    --color-cyber-pink: #ff2a6d;
+    --color-cyber-purple: #7c4dff;
+  }
+
   body {
-    @apply bg-cyber-darkest text-white;
+    @apply bg-[color:var(--color-cyber-darkest)] text-white;
     font-family: 'Segoe UI', system-ui, sans-serif;
   }
 }
 
 @layer components {
   .cyber-button {
-    @apply relative px-6 py-2 bg-cyber-dark border border-cyber-blue text-cyber-blue 
-           hover:bg-cyber-blue hover:text-cyber-dark transition-colors duration-300
-           focus:outline-none focus:ring-2 focus:ring-cyber-blue focus:ring-opacity-50
-           before:content-[''] before:absolute before:inset-0 before:border-cyber-blue
+    @apply relative px-6 py-2 bg-[color:var(--color-cyber-dark)] border border-[color:var(--color-cyber-blue)] text-[color:var(--color-cyber-blue)] 
+           hover:bg-[color:var(--color-cyber-blue)] hover:text-[color:var(--color-cyber-dark)] transition-colors duration-300
+           focus:outline-none focus:ring-2 focus:ring-[color:var(--color-cyber-blue)] focus:ring-opacity-50
+           before:content-[''] before:absolute before:inset-0 before:border-[color:var(--color-cyber-blue)]
            before:border before:opacity-0 before:scale-75 hover:before:opacity-100
            hover:before:scale-100 before:transition-all;
   }
 
   .cyber-input {
-    @apply bg-cyber-darker border-2 border-cyber-blue text-white px-4 py-2 rounded-none
-           focus:outline-none focus:border-cyber-pink focus:shadow-neon-pink
+    @apply bg-[color:var(--color-cyber-darker)] border-2 border-[color:var(--color-cyber-blue)] text-white px-4 py-2 rounded-none
+           focus:outline-none focus:border-[color:var(--color-cyber-pink)] focus:shadow-[0_0_5px_var(--color-cyber-pink),0_0_20px_var(--color-cyber-pink)]
            placeholder:text-gray-500 transition-all duration-300;
   }
 
   .cyber-card {
-    @apply relative bg-cyber-dark border-2 border-cyber-blue p-6 
+    @apply relative bg-[color:var(--color-cyber-dark)] border-2 border-[color:var(--color-cyber-blue)] p-6 
            before:content-[''] before:absolute before:inset-0 
-           before:border-2 before:border-cyber-pink before:opacity-0
+           before:border-2 before:border-[color:var(--color-cyber-pink)] before:opacity-0
            hover:before:opacity-100 before:transition-opacity
-           hover:shadow-neon-blue transition-all duration-300;
+           hover:shadow-[0_0_5px_var(--color-cyber-blue),0_0_20px_var(--color-cyber-blue)] transition-all duration-300;
   }
 
   .cyber-grid {
     @apply grid gap-6 p-6 relative overflow-hidden
            before:content-[''] before:absolute before:inset-0
-           before:bg-[linear-gradient(transparent,theme(colors.cyber-blue)_1px,transparent_1px),linear-gradient(90deg,transparent,theme(colors.cyber-blue)_1px,transparent_1px)]
+           before:bg-[linear-gradient(transparent,var(--color-cyber-blue)_1px,transparent_1px),linear-gradient(90deg,transparent,var(--color-cyber-blue)_1px,transparent_1px)]
            before:bg-[size:30px_30px] before:opacity-10;
   }
 
   .cyber-text {
     @apply font-bold text-transparent bg-clip-text
-           bg-gradient-to-r from-cyber-pink via-cyber-purple to-cyber-blue
-           animate-glow;
+           bg-gradient-to-r from-[color:var(--color-cyber-pink)] via-[color:var(--color-cyber-purple)] to-[color:var(--color-cyber-blue)]
+           animate-[glow_1.5s_ease-in-out_infinite_alternate];
   }
 
   .cyber-border {
-    @apply border-2 border-cyber-blue shadow-neon-blue;
+    @apply border-2 border-[color:var(--color-cyber-blue)] shadow-[0_0_5px_var(--color-cyber-blue),0_0_20px_var(--color-cyber-blue)];
   }
 
   .scanline {
-    @apply pointer-events-none fixed inset-0 bg-gradient-to-b from-transparent via-cyber-blue/10 to-transparent opacity-50 animate-scanline;
+    @apply pointer-events-none fixed inset-0 bg-gradient-to-b from-transparent via-[color:var(--color-cyber-blue)]/10 to-transparent opacity-50 animate-[scanline_6s_linear_infinite];
   }
+}
+
+@keyframes glow {
+  0% { text-shadow: 0 0 5px #fff; }
+  100% { text-shadow: 0 0 10px #fff, 0 0 15px var(--color-cyber-blue), 0 0 20px var(--color-cyber-pink); }
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
 }

@@ -10,13 +10,22 @@ import {
 import { useStore } from "../store/store";
 import { motivationalQuotes } from "../data/quotes";
 
+interface TimerState {
+  timeLeft: number;
+  isRunning: boolean;
+  isWork: boolean;
+  sessions: number;
+}
+
 export default function PomodoroPage() {
   const { settings, addHabitLog, kitten, updateKitten, resetKitten } =
     useStore();
-  const [timeLeft, setTimeLeft] = useState(settings.workDuration * 60);
-  const [isRunning, setIsRunning] = useState(false);
-  const [isWork, setIsWork] = useState(true);
-  const [sessions, setSessions] = useState(0);
+  const [timerState, setTimerState] = useState<TimerState>({
+    timeLeft: settings.workDuration * 60,
+    isRunning: false,
+    isWork: true,
+    sessions: 0,
+  });
   const [quote, setQuote] = useState(motivationalQuotes[0]);
   const [showKittenWarning, setShowKittenWarning] = useState(false);
 
@@ -27,17 +36,18 @@ export default function PomodoroPage() {
 
   useEffect(() => {
     getRandomQuote();
-  }, [sessions]);
+  }, [timerState.sessions, getRandomQuote]);
 
   useEffect(() => {
-    let interval: number;
-    if (isRunning && timeLeft > 0) {
+    let interval: NodeJS.Timeout | null = null;
+
+    if (timerState.isRunning && timerState.timeLeft > 0) {
       interval = setInterval(() => {
-        setTimeLeft((time) => time - 1);
+        setTimerState((prev) => ({ ...prev, timeLeft: prev.timeLeft - 1 }));
       }, 1000);
-    } else if (timeLeft === 0) {
-      if (isWork) {
-        setSessions((s) => s + 1);
+    } else if (timerState.timeLeft === 0) {
+      if (timerState.isWork) {
+        setTimerState((prev) => ({ ...prev, sessions: prev.sessions + 1 }));
         updateKitten({
           health: Math.min(kitten.health + 10, 100),
           focusStreak: kitten.focusStreak + 1,
@@ -50,28 +60,40 @@ export default function PomodoroPage() {
       }
       handleSessionComplete();
     }
-    return () => clearInterval(interval);
-  }, [isRunning, timeLeft]);
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [
+    timerState.isRunning,
+    timerState.timeLeft,
+    settings,
+    kitten.health,
+    kitten.focusStreak,
+  ]);
 
   const handleSessionComplete = () => {
-    setIsRunning(false);
-    if (isWork) {
-      if (sessions + 1 >= settings.sessionsBeforeLongBreak) {
-        setTimeLeft(settings.longBreakDuration * 60);
-        setSessions(0);
+    const nextState = { ...timerState, isRunning: false };
+
+    if (timerState.isWork) {
+      if (timerState.sessions + 1 >= settings.sessionsBeforeLongBreak) {
+        nextState.timeLeft = settings.longBreakDuration * 60;
+        nextState.sessions = 0;
       } else {
-        setTimeLeft(settings.breakDuration * 60);
+        nextState.timeLeft = settings.breakDuration * 60;
       }
-      setIsWork(false);
+      nextState.isWork = false;
     } else {
-      setTimeLeft(settings.workDuration * 60);
-      setIsWork(true);
+      nextState.timeLeft = settings.workDuration * 60;
+      nextState.isWork = true;
     }
+
+    setTimerState(nextState);
     getRandomQuote();
   };
 
   const handleQuit = () => {
-    if (isWork && isRunning) {
+    if (timerState.isWork && timerState.isRunning) {
       setShowKittenWarning(true);
       return;
     }
@@ -89,10 +111,12 @@ export default function PomodoroPage() {
   };
 
   const resetTimer = () => {
-    setIsRunning(false);
-    setTimeLeft(settings.workDuration * 60);
-    setIsWork(true);
-    setSessions(0);
+    setTimerState({
+      timeLeft: settings.workDuration * 60,
+      isRunning: false,
+      isWork: true,
+      sessions: 0,
+    });
   };
 
   const formatTime = (seconds: number) => {
@@ -147,10 +171,10 @@ export default function PomodoroPage() {
           <p>Focus Streak: {kitten.focusStreak} sessions</p>
         </div>
         <h1 className="text-4xl font-bold text-gray-900 mb-8">
-          {isWork ? "Focus Time" : "Break Time"}
+          {timerState.isWork ? "Focus Time" : "Break Time"}
         </h1>
         <div className="text-7xl font-bold text-indigo-600 mb-8">
-          {formatTime(timeLeft)}
+          {formatTime(timerState.timeLeft)}
         </div>
         <div className="mb-8 px-8">
           <blockquote className="italic text-gray-600">
@@ -160,10 +184,12 @@ export default function PomodoroPage() {
         </div>
         <div className="flex justify-center space-x-4">
           <button
-            onClick={() => setIsRunning(!isRunning)}
+            onClick={() =>
+              setTimerState((prev) => ({ ...prev, isRunning: !prev.isRunning }))
+            }
             className="flex items-center px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
           >
-            {isRunning ? (
+            {timerState.isRunning ? (
               <>
                 <Pause className="h-5 w-5 mr-2" /> Pause
               </>
@@ -183,7 +209,7 @@ export default function PomodoroPage() {
       </div>
       <div className="bg-white rounded-lg shadow p-4">
         <div className="flex items-center justify-between text-sm text-gray-600">
-          <span>Sessions completed: {sessions}</span>
+          <span>Sessions completed: {timerState.sessions}</span>
           <button className="flex items-center text-indigo-600 hover:text-indigo-700">
             <Settings className="h-4 w-4 mr-1" /> Settings
           </button>

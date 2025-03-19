@@ -1,26 +1,3 @@
-/*
-  # Initial Schema Setup
-
-  1. New Tables
-    - `notes`
-      - `id` (uuid, primary key)
-      - `user_id` (uuid, references auth.users)
-      - `title` (text)
-      - `content` (text)
-      - `created_at` (timestamp)
-    - `habit_logs`
-      - `id` (uuid, primary key)
-      - `user_id` (uuid, references auth.users)
-      - `date` (date)
-      - `focus_minutes` (integer)
-      - `completed_sessions` (integer)
-      - `created_at` (timestamp)
-
-  2. Security
-    - Enable RLS on all tables
-    - Add policies for authenticated users to manage their own data
-*/
-
 -- Create notes table
 CREATE TABLE IF NOT EXISTS notes (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
